@@ -10,9 +10,7 @@ import com.yusufbilalusta.springboot.service.ProjectService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 
@@ -25,16 +23,16 @@ public class ProjectController {
     @GetMapping
     public String listProjects(Model model) {
         model.addAttribute("projects", projectService.getAllProjects());
-        return "project/list";
+        return "list";
     }
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        return "project/form";
+        return "form";
     }
 
     @PostMapping
-    public String saveProject(@ModelAttribute("project") Project project) {
+    public String saveProject(@ModelAttribute Project project) {
         projectService.saveProject(project);
         return "redirect:/projects";
     }
@@ -42,7 +40,7 @@ public class ProjectController {
     @GetMapping("/{id}")
     public String showProject(@PathVariable Long id, Model model) {
         model.addAttribute("project", projectService.getProjectById(id).orElse(null));
-        return "projects/detail";
+        return "detail";
     }
 
 }
