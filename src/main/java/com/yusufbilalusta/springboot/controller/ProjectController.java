@@ -28,6 +28,7 @@ public class ProjectController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
+        model.addAttribute("project", new Project());
         return "form";
     }
 
