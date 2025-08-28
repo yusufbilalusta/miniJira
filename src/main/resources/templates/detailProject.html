@@ -19,6 +19,14 @@
                                 <div class="card-body">
                                     <h5 class="card-title" th:text="${task.name}"></h5>
                                     <p class="card-text" th:text="${task.description}"></p>
+                                    
+                                    <!-- Task Delete Button - Sadece task ID'si yeterli -->
+                                    <form th:action="@{/tasks/delete/{id}(id=${task.id})}" method="post" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger" 
+                                                onclick="return confirm('Bu görevi silmek istediğinizden emin misiniz?')">
+                                            Görevi Sil
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
