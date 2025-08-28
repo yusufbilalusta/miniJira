@@ -16,6 +16,6 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("projects", projectService.getAllProjects());
-        return "index";
+        return "home";
     }
 }

@@ -23,13 +23,13 @@ public class ProjectController {
     @GetMapping
     public String listProjects(Model model) {
         model.addAttribute("projects", projectService.getAllProjects());
-        return "list";
+        return "projects";
     }
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("project", new Project());
-        return "form";
+        return "createProject";
     }
 
     @PostMapping
@@ -38,10 +38,16 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
+    @PostMapping("/delete/{id}")
+    public String deleteProject(@PathVariable Long id) {
+        projectService.deleteProject(id);
+        return "redirect:/projects";
+    }
+
     @GetMapping("/{id}")
     public String showProject(@PathVariable Long id, Model model) {
         model.addAttribute("project", projectService.getProjectById(id).orElse(null));
-        return "detail";
+        return "detailProject";
     }
 
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.yusufbilalusta.springboot.model.Task;
 import com.yusufbilalusta.springboot.service.ProjectService;
@@ -40,15 +41,17 @@ public class TaskController {
     }
 
     @PostMapping
-    public String createTask(@ModelAttribute Task task) {
+    public String createTask(@ModelAttribute Task task, @RequestParam Long projectId) {
+        // Task'i proje ile ilişkilendir
+        task.setProject(projectService.getProjectById(projectId).orElse(null));
         taskService.saveTask(task);
-        return "redirect:/list";
+        return "redirect:/projects/" + projectId; // Proje detay sayfasına yönlendir
     }
 
     @PostMapping("/delete/{id}")
     public String deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
-        return "redirect:/list";
+        return "redirect:/projects";
     }
 
 }
