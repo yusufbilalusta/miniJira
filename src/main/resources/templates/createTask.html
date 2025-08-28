@@ -7,10 +7,10 @@
 <body>
     <div class="container mt-4">
         <h1>Yeni Görev Ekle</h1>
-        <h4 class="text-muted" th:text="'Proje: ' + ${project.name}"></h4>
+        <h4 class="text-muted" th:text="'Proje: ' + ${selectedProject.name}"></h4>
         
         <form th:action="@{/tasks}" th:object="${task}" method="post">
-            <input type="hidden" th:value="${projectId}" name="projectId">
+            <input type="hidden" th:value="${selectedProjectId}" name="projectId">
             
             <div class="mb-3">
                 <label for="name" class="form-label">Görev Adı</label>

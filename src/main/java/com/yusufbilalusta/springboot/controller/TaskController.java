@@ -23,29 +23,32 @@ public class TaskController {
     @Autowired
     private ProjectService projectService;
 
+    
     @GetMapping("list/{project_id}")
     public String listTasksOfProject(@PathVariable("project_id") Long projectId, Model model) {
         model.addAttribute("tasks", taskService.getTasksByProjectId(projectId));
         return "taskList";
     }
 
-    @GetMapping("/new")
-    public String showCreateTaskForm(Model model) {
+    @GetMapping("/new/{project_id}")
+    public String showCreateTaskForm(Model model, @PathVariable("project_id") Long projectId) {
         model.addAttribute("task", new Task());
-        model.addAttribute("projects", projectService.getAllProjects());
+        model.addAttribute("selectedProject", projectService.getProjectById(projectId).orElse(null));
+        model.addAttribute("selectedProjectId", projectId); // Also add projectId since HTML expects it
+        model.addAttribute("projectId", projectId); //For delete button
         return "createTask";
     }
 
     @PostMapping
     public String createTask(@ModelAttribute Task task) {
         taskService.saveTask(task);
-        return "redirect:/tasks";
+        return "redirect:/list";
     }
 
     @PostMapping("/delete/{id}")
     public String deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
-        return "redirect:/tasks";
+        return "redirect:/list";
     }
 
 }
