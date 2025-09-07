@@ -1,21 +1,26 @@
 package com.yusufbilalusta.springboot.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.yusufbilalusta.springboot.service.ProjectService;
-
-@Controller
+@RestController
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api")
 public class HomeController {
 
-    @Autowired
-    private ProjectService projectService;
-
     @GetMapping("/")
-    public String home(Model model) {
-        model.addAttribute("projects", projectService.getAllProjects());
-        return "home";
+    public Map<String, String> home() {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Welcome to the Mini Jira API");
+        return response;
     }
+
+    @GetMapping("/health")
+    public Map<String, String> health() {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "UP");
+        return response;
+    }
+
 }

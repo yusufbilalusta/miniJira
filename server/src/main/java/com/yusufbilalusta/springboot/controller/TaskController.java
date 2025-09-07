@@ -1,22 +1,18 @@
 package com.yusufbilalusta.springboot.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import com.yusufbilalusta.springboot.model.Task;
 import com.yusufbilalusta.springboot.service.ProjectService;
 import com.yusufbilalusta.springboot.service.TaskService;
+import java.util.List;
 
 
-@Controller
-@RequestMapping("/tasks")
+@RestController
+@RequestMapping("/api/tasks")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TaskController {
     @Autowired
     private TaskService taskService;
@@ -24,34 +20,49 @@ public class TaskController {
     @Autowired
     private ProjectService projectService;
 
-    
-    @GetMapping("list/{project_id}")
-    public String listTasksOfProject(@PathVariable("project_id") Long projectId, Model model) {
-        model.addAttribute("tasks", taskService.getTasksByProjectId(projectId));
-        return "taskList";
+    @GetMapping
+    public List<Task> getAllTasks() {
+        return taskService.getAllTasks();
     }
 
-    @GetMapping("/new/{project_id}")
-    public String showCreateTaskForm(Model model, @PathVariable("project_id") Long projectId) {
-        model.addAttribute("task", new Task());
-        model.addAttribute("selectedProject", projectService.getProjectById(projectId).orElse(null));
-        model.addAttribute("selectedProjectId", projectId); // Also add projectId since HTML expects it
-        model.addAttribute("projectId", projectId); //For delete button
-        return "createTask";
+    @GetMapping("/{id}")
+    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
+        Task task = taskService.getTaskById(id);
+        if (task != null) {
+            return ResponseEntity.ok(task);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @GetMapping("/project/{projectId}")
+    public List<Task> getTasksByProjectId(@PathVariable Long projectId) {
+        return taskService.getTasksByProjectId(projectId);
     }
 
     @PostMapping
-    public String createTask(@ModelAttribute Task task, @RequestParam Long projectId) {
-        // Task'i proje ile ilişkilendir
-        task.setProject(projectService.getProjectById(projectId).orElse(null));
-        taskService.saveTask(task);
-        return "redirect:/projects/" + projectId; // Proje detay sayfasına yönlendir
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        Task savedTask = taskService.saveTask(task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
     }
 
-    @PostMapping("/delete/{id}")
-    public String deleteTask(@PathVariable Long id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task taskDetails) {
+        Task existingTask = taskService.getTaskById(id);
+        if (existingTask != null) {
+            existingTask.setName(taskDetails.getName());
+            existingTask.setDescription(taskDetails.getDescription());
+            existingTask.setProject(taskDetails.getProject());
+            Task updatedTask = taskService.saveTask(existingTask);
+            return ResponseEntity.ok(updatedTask);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
-        return "redirect:/projects";
+        return ResponseEntity.noContent().build();
     }
-
 }
